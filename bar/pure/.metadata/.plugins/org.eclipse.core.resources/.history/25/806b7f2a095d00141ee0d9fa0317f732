@@ -1,8 +1,0 @@
-package com.example.my_first;
-
-
-import WakefulBroadcastReceiver;
-
-public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
-
-}

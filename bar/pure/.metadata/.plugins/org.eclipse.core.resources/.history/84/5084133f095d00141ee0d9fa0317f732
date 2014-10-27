@@ -1,7 +1,0 @@
-package com.example.my_first;
-
-import android.support.v4.content.WakefulBroadcastReceiver;
-
-public class GcmBroadcastReceiver extends android.support.v4.content.WakefulBroadcastReceiver {
-
-}
