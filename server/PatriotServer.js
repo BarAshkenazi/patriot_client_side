@@ -1,10 +1,10 @@
 var restify     =   require('restify');
 var mongojs     =   require('mongojs');
-var morgan      =   require('morgan');
-var db          =   mongojs('patriot',['Areas']);
+var db          =   mongojs('patriot',['Areas','Users']);
 restify.CORS.ALLOW_HEADERS.push('dataType');
 var server      =   restify.createServer();
 var request = require('request');
+
 
 server.use(restify.acceptParser(server.acceptable));
 server.use(restify.queryParser());
@@ -20,8 +20,14 @@ server.use(function(req, res, next) {
 }); 
 
 var http = require('http');
-//
-server.listen(process.env.PORT || 3000, function () {
+
+db.Users.ensureIndex({
+    regid: 1
+}, {
+    unique: true
+})
+
+server.listen(process.env.PORT || 80, function () {
  //   console.log("Server started @ ",process.env.PORT || 3000);
 });
 
@@ -72,14 +78,76 @@ server.listen(process.env.PORT || 3000, function () {
  });
 
  server.post("/registerUser", function (req, res, next) {
-
      
-     res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8'});
-     res.end(JSON.stringify());
+     var user = {};
+     user.regid = req.params.regid;
+     db.Users.insert(user,function(err,dbUser){
+         
+
+        if (err && err.code !== 11000)// code 11000 = duplicate regid -> its fine by me  { 
+       
+                res.writeHead(400, {
+                    'Content-Type': 'application/json; charset=utf-8'
+                });
+                res.end(JSON.stringify({
+                    error: err,
+                    message: "A problem occured registering the user for the service"
+                }));
+            }
+         else {
+            res.writeHead(200, {
+                'Content-Type': 'application/json; charset=utf-8'
+            });
+            res.end();
+        }   
+         
+     });
+     
+
      return next(); 
      
  });
 
+
+ server.get("/send",function(req,res,next){
+     
+        var gcm     = require('C:\\Users\\Bar2.Bar\\AppData\\Roaming\\npm\\node_modules\\node-gcm\\index.js');
+        var message = new gcm.Message();
+
+        //API Server Key
+        var sender = new gcm.Sender('AIzaSyCUN2RNwoFvL6BWm0F11uejIdM4yFHfSEQ');
+        var registrationIds = [];    
+
+        // Value the payload data to send...
+        message.addData('message',"hello push");
+        message.addData('title','Push Notification Sample' );
+        message.addData('msgcnt','3'); // Shows up in the notification in the status bar
+
+        count++;
+        message.addData('notId',count);
+
+        message.timeToLive = 3000;// Duration in seconds to hold in GCM and retry before timing out.
+
+        db.Users.find(function(error,users){
+
+             users.forEach(function(user){
+
+                // At least one reg id required
+                registrationIds.push(user.regid);
+
+             });
+
+             //Parameters: message-literal, registrationIds-array, No. of retries, callback-function
+             sender.send(message, registrationIds, 4, function (result) {
+                 console.log(result);
+             });
+
+        });
+     
+     
+           
+           
+   });
 
 
  

@@ -188,7 +188,7 @@ public class MainActivity extends Activity  {
                     //	android.os.Debug.waitForDebugger();
                         // test sending POST request
                         Map<String, String> params = new HashMap<String, String>();
-                        String requestURL = "http://172.20.10.2:3000/registerUser";
+                        String requestURL = "http://172.20.10.7:80/registerUser";
                         params.put("regid", regid[0]);
                         params.put("lan", "214321412");
                         params.put("lat", "436346656");
@@ -196,10 +196,10 @@ public class MainActivity extends Activity  {
                         try {
                             HttpUtility.sendPostRequest(requestURL, params);
                             System.out.println("request sent to:" + requestURL);
-//                            String[] response = HttpUtility.readMultipleLinesRespone();
-//                            for (String line : response) {
-//                                System.out.println(line);
-//                            }
+                            String[] response = HttpUtility.readMultipleLinesRespone();
+                            for (String line : response) {
+                                System.out.println(line);
+                            }
                         } catch (IOException ex) {
                             ex.printStackTrace();
                             System.out.println("failed");
