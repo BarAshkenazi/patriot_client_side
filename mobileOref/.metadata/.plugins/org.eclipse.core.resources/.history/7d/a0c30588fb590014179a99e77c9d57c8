@@ -1,0 +1,13 @@
+package com.example.android.map;
+
+public class ItemData {
+	 
+	 
+    public String title;
+     
+    public ItemData(String title,int imageUrl){
+         
+        this.title = title;
+    }
+    
+}

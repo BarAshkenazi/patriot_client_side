@@ -1,0 +1,90 @@
+package com.example.android.City;
+
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.example.android.DBConn.DataBaseWrapper;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
+
+public class CityOperations
+{
+	// Database fields
+	private DataBaseWrapper dbHelper;
+    private String[] CITIES_TABLE_COLUMNS = { DataBaseWrapper.IS_CHECKED, DataBaseWrapper.CITY_NAME };
+
+    private SQLiteDatabase database;
+    
+    public CityOperations(Context context)
+    {
+        dbHelper = new DataBaseWrapper(context);
+    }
+    
+    public void open() throws SQLException 
+    {
+        database = dbHelper.getWritableDatabase();
+    }
+
+    public void close() 
+    {
+    	dbHelper.close();
+    }
+
+    public City addCity(String name)
+    {
+        ContentValues values = new ContentValues();
+        values.put(DataBaseWrapper.CITY_NAME, name);
+        long cityId = database.insert(DataBaseWrapper.CITIES, null, values);
+        
+        // now that the student is created return it ...
+        Cursor cursor = database.query(DataBaseWrapper.CITIES,
+        		CITIES_TABLE_COLUMNS, DataBaseWrapper.IS_CHECKED + " = "
+                        + cityId, null, null, null, null);
+        
+        cursor.moveToFirst();
+        City newComment = parseCity(cursor);
+        cursor.close();
+
+        return newComment;
+    }
+
+    public void deleteCity(City comment) 
+    {
+        String isChecked = comment.getIsChecked();
+        System.out.println("Comment deleted with id: " + isChecked);
+        database.delete(DataBaseWrapper.CITIES, DataBaseWrapper.IS_CHECKED
+                + " = " + isChecked, null);
+    }
+
+    
+    public ArrayList<City> getAllCities() {
+    	ArrayList<City> allCities = new ArrayList<City>();
+        Cursor cursor = database.query(DataBaseWrapper.CITIES,
+                CITIES_TABLE_COLUMNS, null, null, null, null, null);
+
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            City currCity = parseCity(cursor);
+            allCities.add(currCity);
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+        return allCities;
+	}
+
+    private City parseCity(Cursor cursor) 
+    {
+        City city = new City();
+        city.setIsChecked((cursor.getString(0)));
+        city.setName(cursor.getString(1));
+        return city;
+    }
+
+	
+}

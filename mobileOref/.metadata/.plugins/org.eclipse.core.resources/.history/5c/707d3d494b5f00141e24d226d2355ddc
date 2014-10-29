@@ -1,0 +1,9 @@
+package com.example.android.List;
+
+import java.util.Comparator;
+
+import com.example.android.City.City;
+
+public class cityComparator implements Comparator<? super City> {
+
+}

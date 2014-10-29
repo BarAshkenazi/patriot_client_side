@@ -1,0 +1,163 @@
+package com.example.android.List;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import com.example.android.City.City;
+import com.example.android.map.R;
+
+import android.app.Activity;
+import android.util.SparseArray;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.BaseExpandableListAdapter;
+import android.widget.CheckedTextView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class MyExpandableListAdapter extends BaseExpandableListAdapter {
+
+	  private final SparseArray<Group> groups;
+	  public LayoutInflater inflater;
+	  public Activity activity;
+	  public static ArrayList<City> citiesToAlert = new ArrayList<City>();
+	  public static ArrayList<City> restCities = new ArrayList<City>();
+	  public static ArrayList<City> changes = new ArrayList<City>();
+
+	  public MyExpandableListAdapter(Activity act, SparseArray<Group> types) {
+	    activity = act;
+	    this.groups = types;
+	    inflater = act.getLayoutInflater();
+	  }
+
+	  @Override
+	  public Object getChild(int groupPosition, int childPosition) {
+	    return groups.get(groupPosition).cities.get(childPosition).getName();
+	  }
+
+	  @Override
+	  public long getChildId(int groupPosition, int childPosition) {
+	    return 0;
+	  }
+
+	  @Override
+	  public View getChildView(int groupPosition, final int childPosition,
+	      boolean isLastChild, View convertView, ViewGroup parent) {
+		  
+		 final int parentPosition =  groupPosition;
+	    final String children = (String) getChild(groupPosition, childPosition);
+	    TextView text = null;
+	    if (convertView == null) {
+	      convertView = inflater.inflate(R.layout.listrow_details, null);
+	    }
+	    text = (TextView) convertView.findViewById(R.id.textView1);
+	    text.setText(children);
+	    convertView.setOnClickListener(new OnClickListener() {
+	      @Override
+	      public void onClick(View v) {
+	        
+	    	  
+	    	  int targetPosition = 0;
+	    	  
+	    	  // getting the chosen city
+	    	  City city = groups.get(parentPosition).cities.get(childPosition);
+	    	  
+	    	  
+	    	  // Checking if the user wanted to delete city from 
+	    	  // the chosen cities.
+	    	  if (parentPosition == 0)
+	    	  {
+	    		  targetPosition = 1;
+	    		  city.setIsChosen("N");
+	    		  citiesToAlert.remove(city);
+	    		  restCities.add(city);
+	    	  }
+	    	  else
+	    	  {
+	    		  city.setIsChosen("Y");  
+	    		  citiesToAlert.add(city);
+	    		  restCities.remove(city);
+	    	  }
+	    	  
+	    	  if (changes.contains(city))
+	    	  {
+	    		  changes.remove(city);
+	    	  }
+	    	  
+	    	  changes.add(city);
+	    	  
+	    	  // delete the chosen city from the list.
+	    	  groups.get(parentPosition).cities.remove(childPosition);
+	    	  
+	    	  // adding the new city.
+	    	  groups.get(targetPosition).cities.add(city);
+	    	  
+	    	  Collections.sort(groups.get(targetPosition).cities, 
+	    			  new CityComparator());
+	    	  
+	    	  Toast.makeText(activity, children,
+	            Toast.LENGTH_LONG).show();
+	    	  
+	    	  notifyDataSetChanged();
+	        
+	      }
+	    });
+	    return convertView;
+	  }
+
+	  @Override
+	  public int getChildrenCount(int groupPosition) {
+	    return groups.get(groupPosition).cities.size();
+	  }
+
+	  @Override
+	  public Object getGroup(int groupPosition) {
+	    return groups.get(groupPosition);
+	  }
+
+	  @Override
+	  public int getGroupCount() {
+	    return groups.size();
+	  }
+
+	  @Override
+	  public void onGroupCollapsed(int groupPosition) {
+	    super.onGroupCollapsed(groupPosition);
+	  }
+
+	  @Override
+	  public void onGroupExpanded(int groupPosition) {
+	    super.onGroupExpanded(groupPosition);
+	  }
+
+	  @Override
+	  public long getGroupId(int groupPosition) {
+	    return 0;
+	  }
+
+	  @Override
+	  public View getGroupView(int groupPosition, boolean isExpanded,
+	      View convertView, ViewGroup parent) {
+	    if (convertView == null) {
+	      convertView = inflater.inflate(R.layout.listrow_group, null);
+	    }
+	    Group types = (Group) getGroup(groupPosition);
+	    ((CheckedTextView) convertView).setText(types.string);
+	    ((CheckedTextView) convertView).setChecked(isExpanded);
+	    return convertView;
+	  }
+
+	  @Override
+	  public boolean hasStableIds() {
+	    return false;
+	  }
+
+	  @Override
+	  public boolean isChildSelectable(int groupPosition, int childPosition) {
+	    return false;
+	  }
+	} 

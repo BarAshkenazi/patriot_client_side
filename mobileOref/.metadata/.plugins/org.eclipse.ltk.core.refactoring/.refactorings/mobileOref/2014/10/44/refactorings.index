@@ -1,0 +1,17 @@
+1414411763559	Rename package 'com.example.android.map'
+1414412382727	Rename type 'City'
+1414413153145	Rename package 'com.example.android.map'
+1414415775463	Rename package 'com.example.android.map'
+1414415785904	Delete element
+1414422180089	Move compilation unit
+1414422216726	Copy compilation units
+1414422224543	Move compilation units
+1414422239856	Delete elements
+1414422260797	Move compilation unit
+1414422289480	Move compilation unit
+1414422303775	Rename type 'ListsTypes'
+1414422420935	Rename type 'Student'
+1414422439915	Rename type 'StudentOperations'
+1414424194208	Rename field 'types'
+1414498871973	Encapsulate field 'isChosen'
+1414573768398	Rename type 'cityComparator'
