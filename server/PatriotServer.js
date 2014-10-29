@@ -1,15 +1,45 @@
 var restify     =   require('restify');
 var mongojs     =   require('mongojs');
-var db          =   mongojs('patriot',['Areas','Users']);
+
 restify.CORS.ALLOW_HEADERS.push('dataType');
 var server      =   restify.createServer();
 var request = require('request');
 
 
+var dbUrl = "mongodb://Admin:Cc12341234@ds047040.mongolab.com:47040/mobileoref";
+var db    =  mongojs(dbUrl,['Areas','Users','AreaPolygon']);
+
+var areas = {};
+areas.areas = [];
+
+var sortedAreas = [];
+
+   var func = function(error,results){
+    sortedAreas = results.sort(function(a,b){
+                        
+                        if(a.area > b.area)
+                            return 1;
+                        if(b.area > a.area)
+                            return -1;
+                        return 0;
+    });
+       
+       
+    sortedAreas.forEach(function(area){
+        
+        areas.areas.push(area.area);
+        
+    });
+   };
+
+    db.AreaPolygon.find({},func);
+
+
+
 server.use(restify.acceptParser(server.acceptable));
 server.use(restify.queryParser());
 server.use(restify.bodyParser());
-server.use(morgan('dev')); // LOGGER
+
 var count = 20;
 // CORS  
 server.use(function(req, res, next) {
@@ -32,36 +62,12 @@ server.listen(process.env.PORT || 80, function () {
 });
 
  server.get("/getAreas", function (req, res, next) {
-     
-   var func = function(error,results){
-    areas = results.sort(function(a,b){
-                        
-                        if(a.area > b.area)
-                            return 1;
-                        if(b.area > a.area)
-                            return -1;
-                        return 0;
-    });
-       
-    var final = [];
-       
-    areas.forEach(function(area){
-        
-        final.push(area.area);
-        
-    });
-       
     res.writeHead(200, {
         'Content-Type': 'application/json; charset=utf-8'});
         
-    res.end(JSON.stringify(final));
-
-   };
-
-    db.Areas.find({},func);
-
-    return next(); 
-     
+    //res.end(JSON.stringify(results));
+    res.end(JSON.stringify(areas));
+      return next(); 
  });
 
 
@@ -85,7 +91,7 @@ server.listen(process.env.PORT || 80, function () {
          
 
         if (err && err.code !== 11000)// code 11000 = duplicate regid -> its fine by me  { 
-       
+           {
                 res.writeHead(400, {
                     'Content-Type': 'application/json; charset=utf-8'
                 });
