@@ -1,0 +1,103 @@
+package com.example.android.List;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.example.android.City.City;
+import com.example.android.City.CityOperations;
+import com.example.android.map.R;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.SparseArray;
+import android.view.Menu;
+import android.view.View;
+import android.widget.ExpandableListView;
+import android.widget.Toast;
+
+
+public class MainActivity extends Activity {
+	  // more efficient than HashMap for mapping integers to objects
+	  SparseArray<Group> groups = new SparseArray<Group>();
+	  private CityOperations cityDBoperation;
+	  
+	  @Override
+	  protected void onCreate(Bundle savedInstanceState) {
+	    super.onCreate(savedInstanceState);
+	    setContentView(R.layout.activity_main);
+	    
+	    Boolean isFirstRun = getSharedPreferences("PREFERENCE", MODE_PRIVATE)
+	    		.getBoolean("isfirstrun", true);
+	    
+	    if (cityDBoperation.equals(null))
+	    {
+	    	cityDBoperation = new CityOperations(this);
+	        cityDBoperation.open();
+	    }
+	    
+	    
+	    if (isFirstRun)
+	    {
+	    	 Toast.makeText(MainActivity.this, "טוען נתונים...",
+	 	            Toast.LENGTH_LONG).show();
+	    	 
+	    	 getSharedPreferences("PREFERENCE", MODE_PRIVATE).edit()
+	    		.putBoolean("isfirstrun", false).commit();
+	    	 
+	         /// getting cities from the server
+	         // inserting all of the cities to the local db, saving the data.
+	    }
+	    else
+	    {
+	    	// Getting all of the city from the local db.
+		    createData();
+	    }
+	    
+	    ExpandableListView listView = (ExpandableListView) findViewById(R.id.listView);
+	    MyExpandableListAdapter adapter = new MyExpandableListAdapter(this, groups);
+	    listView.setAdapter(adapter);
+	  }
+
+	  private void createData() {
+		  Group chosenCity = new Group("הערים שבתחרת להתרעה");
+		  groups.append(0, chosenCity);
+		  
+		  Group allCities = new Group("כלל הערים");
+		  ArrayList<City> cities = (new cityDBoperation()).getAllCities();
+		  
+		  // Displaying all of the cities.
+		  for (City currentCity : cities)
+		  {
+			  allCities.cities.add(currentCity.getName());
+		  }
+		  
+		  groups.append(1, allCities);
+	  }
+
+	 
+
+	} 
+
+/*public class MainActivity extends Activity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+    }
+   
+    @Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+      getMenuInflater().inflate(R.menu.main, menu);
+      
+      return true;
+    }
+    
+    public void show(View view)
+    {
+    	Intent intent = new Intent(this,ShowListActivity.class);
+    	
+    	startActivity(intent);
+    }
+}*/

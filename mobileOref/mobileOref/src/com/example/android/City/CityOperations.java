@@ -1,0 +1,106 @@
+package com.example.android.City;
+
+
+import java.util.ArrayList;
+
+import com.example.android.DBConn.DataBaseWrapper;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
+
+public class CityOperations
+{
+	// Database fields
+	private DataBaseWrapper dbHelper;
+    private String[] CITIES_TABLE_COLUMNS = 
+    	{ DataBaseWrapper.CITY_ID, DataBaseWrapper.CITY_NAME, DataBaseWrapper.CITY_CHOSEN };
+
+    private SQLiteDatabase database;
+    
+    public CityOperations(Context context)
+    {
+        dbHelper = new DataBaseWrapper(context);
+    }
+    
+    public void open() throws SQLException 
+    {
+        database = dbHelper.getWritableDatabase();
+    }
+
+    public void close() 
+    {
+    	dbHelper.close();
+    }
+
+    public City addCity(String name, String isChosen)
+    {
+        ContentValues values = new ContentValues();
+        values.put(DataBaseWrapper.CITY_NAME, name);
+        values.put(DataBaseWrapper.CITY_CHOSEN, isChosen);
+        long cityId = database.insert(DataBaseWrapper.CITIES, null, values);
+        
+        // now that the student is created return it ...
+        Cursor cursor = database.query(DataBaseWrapper.CITIES,
+        		CITIES_TABLE_COLUMNS, DataBaseWrapper.CITY_ID + " = "
+                        + cityId, null, null, null, null);
+        
+        cursor.moveToFirst();
+        City newComment = parseCity(cursor);
+        cursor.close();
+
+        return newComment;
+    }
+
+    public void deleteCity(City comment) 
+    {
+        long id = comment.getId();
+        System.out.println("Comment deleted with id: " + id);
+        database.delete(DataBaseWrapper.CITIES, DataBaseWrapper.CITY_ID
+                + " = " + id, null);
+    }
+    
+    public ArrayList<City> getAllCities() {
+    	ArrayList<City> allCities = new ArrayList<City>();
+        Cursor cursor = database.query(DataBaseWrapper.CITIES,
+                CITIES_TABLE_COLUMNS, null, null, null, null, null);
+
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            City currCity = parseCity(cursor);
+            allCities.add(currCity);
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+        return allCities;
+	}
+    
+    public boolean updateCity(City currCity)
+    {
+    /*	String updateStmt = "UPDATE " + DataBaseWrapper.CITIES + " SET " +
+				 DataBaseWrapper.CITY_CHOSEN + "=" + currCity.getIsChosen() + 
+				 " WHERE " + DataBaseWrapper.CITY_ID + "=" + currCity.getId();
+    	long id = currCity.getId();
+    	database.execSQL(updateStmt);*/
+    	
+    	ContentValues val = new ContentValues();
+    	val.put(DataBaseWrapper.CITY_CHOSEN , currCity.getIsChosen());
+    	
+    	return (database.update
+    	(DataBaseWrapper.CITIES, val, DataBaseWrapper.CITY_ID + "=" + currCity.getId(), null) > 0);
+    }
+
+    private City parseCity(Cursor cursor) 
+    {
+        City city = new City();
+        city.setId((cursor.getInt(0)));
+        city.setName(cursor.getString(1));
+        city.setIsChosen(cursor.getString(2));
+        return city;
+    }
+
+	
+}

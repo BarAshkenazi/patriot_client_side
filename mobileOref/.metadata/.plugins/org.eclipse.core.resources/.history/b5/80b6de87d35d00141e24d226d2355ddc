@@ -1,0 +1,15 @@
+package com.example.android.List;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class City {
+	  
+	
+	  public String string;
+	  public final List<String> children = new ArrayList<String>();
+
+	  public City(String string) {
+	    this.string = string;
+	  }
+}

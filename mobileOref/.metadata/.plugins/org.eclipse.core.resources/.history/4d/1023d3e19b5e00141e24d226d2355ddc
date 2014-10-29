@@ -1,0 +1,34 @@
+package com.example.android.City;
+
+
+public class City 
+{
+    private String isChecked;
+    private String name;
+   
+    public String getIsChecked()
+    {
+    	return isChecked;
+    }
+
+    public void setIsChecked(String isChecked)
+    {
+        this.isChecked = isChecked;
+    }
+
+    public String getName()
+    {
+        return this.name;
+    }
+
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
+    @Override
+    public String toString()
+    {
+        return name;
+    }
+}
