@@ -22,6 +22,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 public class RegisterGcm {
 	
@@ -42,6 +43,7 @@ public class RegisterGcm {
 	    public RegisterGcm(MainActivity activity)
 	    {
 	    	this.activity = activity;
+	    	context = this.activity.getApplicationContext();
 	    }
 
 	    
@@ -50,16 +52,10 @@ public class RegisterGcm {
 	    {
 	        if (checkPlayServices()) {
 	            gcm = GoogleCloudMessaging.getInstance(this.activity);
+	           // storeRegistrationId(this.context,"");
 	            regid = getRegistrationId(context);
-
 	            if (regid.isEmpty()) {
 	                registerInBackground();
-	                
-	                while(regid.isEmpty())
-	                {
-	                	regid = getRegistrationId(context);
-	                }
-	                
 	            }
 	        } else {
 	            Log.i(TAG, "No valid Google Play Services APK found.");
@@ -113,21 +109,21 @@ public class RegisterGcm {
 	    }
 	    
 	    private void registerInBackground() {
-	        new AsyncTask<Void,Void,Void>() {
+	        new AsyncTask<Void,Void,String>() {
 	            @Override
-	            protected Void doInBackground(Void... parameters) {
-	           // 	android.os.Debug.waitForDebugger();
+	            protected String doInBackground(Void... parameters) {
+	           
 	                String msg = "";
 	                try {
 	                    if (gcm == null) {
 	                        gcm = GoogleCloudMessaging.getInstance(context);
 	                    }
 	                    regid = gcm.register(SENDER_ID);
-	                    
+	                    msg = regid;
 	                    //	android.os.Debug.waitForDebugger();
                         // test sending POST request
                         Map<String, String> params = new HashMap<String, String>();
-                        String requestURL = "http://172.20.10.7:80/registerUser";
+                        String requestURL = "http://testoref.herokuapp.com/registerUser";
                         params.put("regid", regid);
                          
                         try {
@@ -138,18 +134,27 @@ public class RegisterGcm {
                                 System.out.println(line);
                             }
                         } catch (IOException ex) {
-                            ex.printStackTrace();
-                            System.out.println("failed");
+                        	msg = ex.getMessage();
                         }
                         HttpUtility.disconnect();
 
 	                    // Persist the regID - no need to register again.
-	                    storeRegistrationId(context, regid);
+	                  storeRegistrationId(context, regid);
 	                } catch (IOException ex) {
-	                	System.out.println("failed");
+	                //	android.os.Debug.waitForDebugger();
+	                	msg = ex.getMessage();
 	                }
-	                return null;
+	                return msg;
 	            }
+	            
+	            @Override
+	            protected void onPostExecute(String msg) {
+	            	
+	   	    	 Toast.makeText(activity, msg,
+	 	 	            Toast.LENGTH_LONG).show();
+
+	            }
+
 	        }.execute();
 	    }
 

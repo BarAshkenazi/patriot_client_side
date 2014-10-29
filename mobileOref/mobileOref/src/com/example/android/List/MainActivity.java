@@ -56,7 +56,7 @@ public class MainActivity extends Activity {
 	    // Checking if there is a need to load the date from the db.
 	    if (isFirstRun)
 	    {
-	    	 Toast.makeText(MainActivity.this, "���� ������...",
+	    	 Toast.makeText(MainActivity.this, "���� �����...",
 	 	            Toast.LENGTH_LONG).show();
 	    	 
 	    	 getSharedPreferences("PREFERENCE", MODE_PRIVATE).edit()
