@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import oref.gcm.RegisterGcm;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -38,6 +40,10 @@ public class MainActivity extends Activity {
 	    super.onCreate(savedInstanceState);
 	    setContentView(R.layout.activity_main);
 	    
+	    RegisterGcm gcm = new RegisterGcm(this);
+	    
+	    String regid = gcm.getRegId();
+	    
 	    Boolean isFirstRun = getSharedPreferences("PREFERENCE", MODE_PRIVATE)
 	    		.getBoolean("isfirstrun", true);
 	    
@@ -50,7 +56,7 @@ public class MainActivity extends Activity {
 	    // Checking if there is a need to load the date from the db.
 	    if (isFirstRun)
 	    {
-	    	 Toast.makeText(MainActivity.this, "èåòï ğúåğéí...",
+	    	 Toast.makeText(MainActivity.this, "ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½...",
 	 	            Toast.LENGTH_LONG).show();
 	    	 
 	    	 getSharedPreferences("PREFERENCE", MODE_PRIVATE).edit()
@@ -78,9 +84,9 @@ public class MainActivity extends Activity {
 
 	  private void createData(ArrayList<City> areas) {
 		  
-		  Group chosenCity = new Group("äòøéí ùáúçøú ìäúøòä");
+		  Group chosenCity = new Group("ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
 		  
-		  Group allCities = new Group("ëìì äòøéí");
+		  Group allCities = new Group("ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½");
 		 
 		  // Checking if this is the first time.
 		  // is this is not the first time - the areas is null
@@ -256,12 +262,12 @@ public class MainActivity extends Activity {
 				// save the data in our DB.
 				saveChosenCiteisInDB();
 				
-		    	 Toast.makeText(MainActivity.this, "äğúåğéí ğùîøå áäöìçä",
+		    	 Toast.makeText(MainActivity.this, "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½",
 			 	            Toast.LENGTH_LONG).show();
 			 }
 			 else
 			 {
-				 Toast.makeText(MainActivity.this, "äúøçùä ùâéàä áòú ùîéøú äğúåğéí..",
+				 Toast.makeText(MainActivity.this, "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½..",
 			 	            Toast.LENGTH_LONG).show();
 			 }
 			 
